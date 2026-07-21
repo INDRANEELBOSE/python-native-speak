@@ -72,14 +72,25 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Clean Selectbox driven safely by session state index
+  # Initialize the selectbox session state key if not present
+  if "module_dropdown" not in st.session_state:
+    st.session_state.module_dropdown = modules_list[
+        st.session_state.module_index
+    ]
+
+  # Ensure the dropdown state matches current module_index when buttons are clicked
+  st.session_state.module_dropdown = modules_list[
+      st.session_state.module_index
+  ]
+
+  # Clean Selectbox driven safely by session state key
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
-      index=st.session_state.module_index,
+      key="module_dropdown",
   )
 
-  # Keep index synced if user picks manually from the dropdown
+  # Sync module index based on selectbox choice
   st.session_state.module_index = modules_list.index(selected_module)
   st.divider()
 
