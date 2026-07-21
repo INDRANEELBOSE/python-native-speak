@@ -70,45 +70,15 @@ tab1, tab2, tab3 = st.tabs(
     ["🚀 Interactive Lessons", "💻 Live Sandbox", "📖 Terminology Glossary"]
 )
 
-
-# Callback functions to change modules safely without state conflict
-def go_previous():
-  if st.session_state.module_index > 0:
-    st.session_state.module_index -= 1
-
-
-def go_next():
-  if st.session_state.module_index < len(modules_list) - 1:
-    st.session_state.module_index += 1
-
-
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Use selectbox with a callback to keep index perfectly synchronized
-  def on_selectbox_change():
-    selected_name = st.session_state.my_dropdown
-    st.session_state.module_index = modules_list.index(selected_name)
-
-  selected_module = st.selectbox(
-      "Choose Your Learning Module",
-      modules_list,
-      index=st.session_state.module_index,
-      key="my_dropdown",
-      on_change=on_selectbox_change,
-  )
-
-  # Double-check sync in case of button triggers
-  if modules_list[st.session_state.module_index] != st.session_state.my_dropdown:
-    st.session_state.my_dropdown = modules_list[st.session_state.module_index]
-    # Rerun to cleanly apply state alignment
-    st.rerun()
-
-  st.divider()
+  # Display current module title clearly as a header banner
   idx = st.session_state.module_index
+  st.subheader(f"📌 {modules_list[idx]}")
+  st.divider()
 
   # --- MODULE 1 ---
   if idx == 0:
-    st.subheader("Module 1: `print` (The Computer's Voice Box)")
     st.write(
         "In human language, you use your voice to speak. In Python, you use"
         " `print` to make the computer speak text onto the screen."
@@ -141,7 +111,6 @@ with tab1:
 
   # --- MODULE 2 ---
   elif idx == 1:
-    st.subheader("Module 2: Variables (The Computer's Backpack)")
     st.write(
         "Think of a variable as a labeled box where the computer can store data"
         " to use later. Example: `score = 100`"
@@ -169,7 +138,6 @@ with tab1:
 
   # --- MODULE 3 ---
   elif idx == 2:
-    st.subheader("Module 3: If/Else (The Computer's Choices)")
     st.write(
         "Computers aren't smart on their own; they just follow rules. `if` lets"
         " them make decisions based on conditions."
@@ -195,7 +163,6 @@ with tab1:
 
   # --- MODULE 4 ---
   elif idx == 3:
-    st.subheader("Module 4: Loops (The Robot's Treadmill)")
     st.write(
         "Instead of writing the same instruction 100 times, a loop tells the"
         " computer to repeat an action automatically."
@@ -220,7 +187,6 @@ with tab1:
 
   # --- MODULE 5 ---
   elif idx == 4:
-    st.subheader("Module 5: Functions (The Mini-Machine Recipe)")
     st.write(
         "A function is a custom mini-machine you build once and reuse whenever"
         " you want. You define it using `def`."
@@ -245,7 +211,6 @@ with tab1:
 
   # --- MODULE 6 ---
   elif idx == 5:
-    st.subheader("Module 6: Lists & Dictionaries (The Filing Cabinet)")
     st.write(
         "Instead of storing just one value in a backpack, a **List** holds a"
         " whole row of items inside brackets `[]`."
@@ -270,7 +235,6 @@ with tab1:
 
   # --- MODULE 7 ---
   elif idx == 6:
-    st.subheader("Module 7: Imports & Modules (The Toolbelt)")
     st.write(
         "Python comes with thousands of pre-made toolkits. To use a toolkit like"
         " random math tools, you have to `import` it first."
@@ -295,7 +259,6 @@ with tab1:
 
   # --- MODULE 8 ---
   elif idx == 7:
-    st.subheader("Module 8: Try/Except (The Safety Net)")
     st.write(
         "Sometimes code crashes (like dividing by zero). A `try/except` block"
         " catches errors gracefully instead of letting the app explode."
@@ -320,7 +283,6 @@ with tab1:
 
   # --- MODULE 9 ---
   elif idx == 8:
-    st.subheader("Module 9: File Handling (The Computer's Diary)")
     st.write(
         "To read or write files on your disk, Python uses the built-in `open()`"
         " function combined with a mode like `'r'` (read) or `'w'` (write)."
@@ -345,7 +307,6 @@ with tab1:
 
   # --- MODULE 10 ---
   elif idx == 9:
-    st.subheader("Module 10: Object-Oriented Programming (The Blueprint)")
     st.write(
         "A **class** is an architectural blueprint used to create custom"
         " objects. You set up initial properties using `__init__`."
@@ -370,7 +331,6 @@ with tab1:
 
   # --- MODULE 11 ---
   elif idx == 10:
-    st.subheader("Module 11: Lambdas (The Ninja Shortcut)")
     st.write(
         "A **lambda** is a tiny, anonymous one-line function used when you"
         " don't want to write a full `def` block."
@@ -396,7 +356,6 @@ with tab1:
 
   # --- MODULE 12 ---
   elif idx == 11:
-    st.subheader("Module 12: APIs & JSON (The Internet Wire)")
     st.write(
         "To talk to other servers on the internet, Python sends web requests and"
         " parses data packs called **JSON** (JavaScript Object Notation)."
@@ -425,18 +384,20 @@ with tab1:
 
   st.divider()
 
-  # --- NEXT / PREVIOUS CHAPTER CONTROLS WITH CALLBACKS ---
+  # --- CLEAN NEXT / PREVIOUS BUTTON CONTROLS ---
   col_prev, col_next = st.columns(2)
 
   with col_prev:
     if st.session_state.module_index > 0:
-      st.button(
-          "⬅ Previous Chapter", on_click=go_previous, key="prev_btn_action"
-      )
+      if st.button("⬅ Previous Chapter", use_container_width=True):
+        st.session_state.module_index -= 1
+        st.rerun()
 
   with col_next:
     if st.session_state.module_index < len(modules_list) - 1:
-      st.button("Next Chapter ➡", on_click=go_next, key="next_btn_action")
+      if st.button("Next Chapter ➡", use_container_width=True):
+        st.session_state.module_index += 1
+        st.rerun()
 
 # --- TAB 2: LIVE SANDBOX ---
 with tab2:
@@ -494,10 +455,21 @@ with tab3:
     """
   )
 
-# Sidebar Stats Tracker
+# Sidebar Stats Tracker & Quick Jump Option
 st.sidebar.markdown("### 📊 Player Status")
 st.sidebar.metric("Total XP Score", f"{st.session_state.score} XP")
 st.sidebar.success(
     f"Active Chapter: {st.session_state.module_index + 1} of"
     f" {len(modules_list)}"
 )
+
+# Optional clean sidebar selector so you can still jump directly if needed without crashing main layout
+st.sidebar.divider()
+st.sidebar.markdown("### 🗺️ Jump to Chapter")
+selected_jump = st.sidebar.selectbox(
+    "Select Module", modules_list, index=st.session_state.module_index, label_visibility="collapsed"
+)
+new_jump_index = modules_list.index(selected_jump)
+if new_jump_index != st.session_state.module_index:
+  st.session_state.module_index = new_jump_index
+  st.rerun()
