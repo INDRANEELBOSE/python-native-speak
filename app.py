@@ -50,7 +50,7 @@ if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
     
     chat = client.chats.create(
-        model="gemini-2.5-flash",
+        model="gemini-2.5-flash",  # <--- CHANGE THIS LINE
         config=types.GenerateContentConfig(
             system_instruction=system_instruction, 
             temperature=0.3
