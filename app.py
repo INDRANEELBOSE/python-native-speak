@@ -7,7 +7,7 @@ st.set_page_config(
     page_title="Python: Learn to Speak", page_icon="🐍", layout="centered"
 )
 
-# Custom Styling for Retro Arcade Vibe & Dynamic Button States
+# Custom Styling
 st.markdown(
     """
     <style>
@@ -41,7 +41,7 @@ if "score" not in st.session_state:
 if "module_index" not in st.session_state:
   st.session_state.module_index = 0
 
-# Track answer states per module to make buttons glow permanently once solved
+# Track answer states per module
 if "m1_status" not in st.session_state:
   st.session_state.m1_status = None
 if "m2_status" not in st.session_state:
@@ -62,16 +62,26 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
+  # Callback function to sync selectbox selection back to session state index
+  def update_module_index():
+    selected_val = st.session_state.my_selectbox_key
+    st.session_state.module_index = modules_list.index(selected_val)
+
+  # Selectbox tied to session state via index and callback
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
       index=st.session_state.module_index,
-      key="module_selectbox_widget",
+      key="my_selectbox_key",
+      on_change=update_module_index,
   )
-  st.session_state.module_index = modules_list.index(selected_module)
+
   st.divider()
 
-  if "Module 1" in selected_module:
+  # Render content based on current module_index (source of truth)
+  current_module = modules_list[st.session_state.module_index]
+
+  if "Module 1" in current_module:
     st.subheader("Module 1: `print` (The Computer's Voice Box)")
     st.write(
         "In human language, you use your voice to speak. In Python, you use"
@@ -82,21 +92,11 @@ with tab1:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-      btn_style = (
-          "background-color: #7f1d1d; color: white; border: 2px solid #ef4444;"
-          if st.session_state.m1_status == "wrong1"
-          else ""
-      )
       if st.button("speak('Hello!')"):
         st.session_state.m1_status = "wrong1"
         st.rerun()
 
     with col2:
-      btn_style = (
-          "background-color: #064e3b; color: white; border: 2px solid #10b981;"
-          if st.session_state.m1_status == "correct"
-          else ""
-      )
       if st.button("print('Hello!')"):
         if st.session_state.m1_status != "correct":
           st.session_state.score += 10
@@ -108,18 +108,14 @@ with tab1:
         st.session_state.m1_status = "wrong3"
         st.rerun()
 
-    # Inline feedback message right under buttons
     if st.session_state.m1_status == "correct":
       st.success(
-          "🎉 Correct! The right button glowed green. You spoke your first line"
-          " of Python! (+10 XP)"
+          "🎉 Correct! You spoke your first line of Python! (+10 XP)"
       )
     elif st.session_state.m1_status in ["wrong1", "wrong3"]:
-      st.error(
-          "❌ Incorrect! That choice glowed red. Try the correct syntax."
-      )
+      st.error("❌ Incorrect! Try the correct syntax.")
 
-  elif "Module 2" in selected_module:
+  elif "Module 2" in current_module:
     st.subheader("Module 2: Variables (The Computer's Backpack)")
     st.write(
         "Think of a variable as a labeled box where the computer can store data"
@@ -146,7 +142,7 @@ with tab1:
     elif st.session_state.m2_status:
       st.error("❌ Not quite right. Variable name goes on the left!")
 
-  elif "Module 3" in selected_module:
+  elif "Module 3" in current_module:
     st.subheader("Module 3: If/Else (The Computer's Choices)")
     st.write(
         "Computers aren't smart on their own; they just follow rules. `if` lets"
@@ -180,12 +176,18 @@ with tab1:
     if st.session_state.module_index > 0:
       if st.button("⬅ Previous Chapter"):
         st.session_state.module_index -= 1
+        st.session_state.my_selectbox_key = modules_list[
+            st.session_state.module_index
+        ]
         st.rerun()
 
   with col_next:
     if st.session_state.module_index < len(modules_list) - 1:
       if st.button("Next Chapter ➡"):
         st.session_state.module_index += 1
+        st.session_state.my_selectbox_key = modules_list[
+            st.session_state.module_index
+        ]
         st.rerun()
 
 # --- TAB 2: LIVE SANDBOX ---
