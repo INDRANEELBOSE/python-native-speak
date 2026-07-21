@@ -72,20 +72,14 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Initialize selectbox state key if not present
-  if "module_selectbox_key" not in st.session_state:
-    st.session_state.module_selectbox_key = modules_list[
-        st.session_state.module_index
-    ]
-
-  # Clean Selectbox Bound directly to session state
+  # Clean Selectbox driven safely by session state index
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
-      key="module_selectbox_key",
+      index=st.session_state.module_index,
   )
 
-  # Sync module index based on selectbox choice
+  # Keep index synced if user picks manually from the dropdown
   st.session_state.module_index = modules_list.index(selected_module)
   st.divider()
 
@@ -410,25 +404,19 @@ with tab1:
 
   st.divider()
 
- # --- NEXT / PREVIOUS CHAPTER CONTROLS ---
+  # --- NEXT / PREVIOUS CHAPTER CONTROLS ---
   col_prev, col_next = st.columns(2)
 
   with col_prev:
     if st.session_state.module_index > 0:
       if st.button("⬅ Previous Chapter"):
         st.session_state.module_index -= 1
-        st.session_state.module_selectbox_key = modules_list[
-            st.session_state.module_index
-        ]
         st.rerun()
 
   with col_next:
     if st.session_state.module_index < len(modules_list) - 1:
       if st.button("Next Chapter ➡"):
         st.session_state.module_index += 1
-        st.session_state.module_selectbox_key = modules_list[
-            st.session_state.module_index
-        ]
         st.rerun()
 
 # --- TAB 2: LIVE SANDBOX ---
