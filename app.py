@@ -72,15 +72,21 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
+  # Ensure session state tracks the module string directly or syncs cleanly
+  if "selected_module_name" not in st.session_state:
+    st.session_state.selected_module_name = modules_list[0]
+
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
-      index=st.session_state.module_index,
+      key="selected_module_name",
   )
+
+  # Sync back to module_index so the next/previous buttons keep working
   st.session_state.module_index = modules_list.index(selected_module)
   st.divider()
 
-  current_module = modules_list[st.session_state.module_index]
+  current_module = st.session_state.selected_module_name
 
   # --- MODULE 1 ---
   if "Module 1" in current_module:
