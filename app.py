@@ -70,30 +70,40 @@ tab1, tab2, tab3 = st.tabs(
     ["🚀 Interactive Lessons", "💻 Live Sandbox", "📖 Terminology Glossary"]
 )
 
+
+# Callback functions to change modules safely without state conflict
+def go_previous():
+  if st.session_state.module_index > 0:
+    st.session_state.module_index -= 1
+
+
+def go_next():
+  if st.session_state.module_index < len(modules_list) - 1:
+    st.session_state.module_index += 1
+
+
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Initialize the selectbox session state key if not present
-  if "module_dropdown" not in st.session_state:
-    st.session_state.module_dropdown = modules_list[
-        st.session_state.module_index
-    ]
+  # Use selectbox with a callback to keep index perfectly synchronized
+  def on_selectbox_change():
+    selected_name = st.session_state.my_dropdown
+    st.session_state.module_index = modules_list.index(selected_name)
 
-  # Ensure the dropdown state matches current module_index when buttons are clicked
-  st.session_state.module_dropdown = modules_list[
-      st.session_state.module_index
-  ]
-
-  # Clean Selectbox driven safely by session state key
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
-      key="module_dropdown",
+      index=st.session_state.module_index,
+      key="my_dropdown",
+      on_change=on_selectbox_change,
   )
 
-  # Sync module index based on selectbox choice
-  st.session_state.module_index = modules_list.index(selected_module)
-  st.divider()
+  # Double-check sync in case of button triggers
+  if modules_list[st.session_state.module_index] != st.session_state.my_dropdown:
+    st.session_state.my_dropdown = modules_list[st.session_state.module_index]
+    # Rerun to cleanly apply state alignment
+    st.rerun()
 
+  st.divider()
   idx = st.session_state.module_index
 
   # --- MODULE 1 ---
@@ -415,20 +425,18 @@ with tab1:
 
   st.divider()
 
-  # --- NEXT / PREVIOUS CHAPTER CONTROLS ---
+  # --- NEXT / PREVIOUS CHAPTER CONTROLS WITH CALLBACKS ---
   col_prev, col_next = st.columns(2)
 
   with col_prev:
     if st.session_state.module_index > 0:
-      if st.button("⬅ Previous Chapter"):
-        st.session_state.module_index -= 1
-        st.rerun()
+      st.button(
+          "⬅ Previous Chapter", on_click=go_previous, key="prev_btn_action"
+      )
 
   with col_next:
     if st.session_state.module_index < len(modules_list) - 1:
-      if st.button("Next Chapter ➡"):
-        st.session_state.module_index += 1
-        st.rerun()
+      st.button("Next Chapter ➡", on_click=go_next, key="next_btn_action")
 
 # --- TAB 2: LIVE SANDBOX ---
 with tab2:
