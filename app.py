@@ -50,8 +50,15 @@ st.markdown(
 # Session State Initialization
 if "score" not in st.session_state:
   st.session_state.score = 0
-if "module" not in st.session_state:
-  st.session_state.module = 1
+if "module_index" not in st.session_state:
+  st.session_state.module_index = 0
+
+# Define modules list for easy tracking and progression
+modules_list = [
+    "Module 1: The Voice Box (print)",
+    "Module 2: The Backpack (Variables)",
+    "Module 3: The Fork in the Road (If/Else)",
+]
 
 # Navigation Tabs
 tab1, tab2, tab3 = st.tabs(
@@ -60,15 +67,16 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Module Select Menu
+  # Module Select Menu tied to session state so Next Button can drive it
   selected_module = st.selectbox(
       "Choose Your Learning Module",
-      [
-          "Module 1: The Voice Box (print)",
-          "Module 2: The Backpack (Variables)",
-          "Module 3: The Fork in the Road (If/Else)",
-      ],
+      modules_list,
+      index=st.session_state.module_index,
+      key="module_selectbox_widget",
   )
+
+  # Sync widget selection back to session state index
+  st.session_state.module_index = modules_list.index(selected_module)
 
   st.divider()
 
@@ -137,6 +145,23 @@ with tab1:
           "❌ Python doesn't use the word 'when' or 'do' like plain English here."
       )
 
+  st.divider()
+
+  # --- NEXT / PREVIOUS CHAPTER CONTROLS ---
+  col_prev, col_next = st.columns(2)
+
+  with col_prev:
+    if st.session_state.module_index > 0:
+      if st.button("⬅ Previous Chapter"):
+        st.session_state.module_index -= 1
+        st.rerun()
+
+  with col_next:
+    if st.session_state.module_index < len(modules_list) - 1:
+      if st.button("Next Chapter ➡"):
+        st.session_state.module_index += 1
+        st.rerun()
+
 # --- TAB 2: LIVE SANDBOX ---
 with tab2:
   st.subheader("💻 Python Sandbox")
@@ -150,13 +175,11 @@ with tab2:
   )
 
   if st.button("▶ Run Code"):
-    # Capture standard output safely
     old_stdout = sys.stdout
     new_stdout = io.StringIO()
     sys.stdout = new_stdout
 
     try:
-      # Execute code safely in a restricted scope
       exec(user_code)
       result = new_stdout.getvalue()
     except Exception as e:
@@ -192,5 +215,6 @@ with tab3:
 st.sidebar.markdown("### 📊 Player Status")
 st.sidebar.metric("Total XP Score", f"{st.session_state.score} XP")
 st.sidebar.success(
-    "App is live, interactive, and completely sandboxed. Ready for testing!"
+    f"Active Chapter: {st.session_state.module_index + 1} of"
+    f" {len(modules_list)}"
 )
