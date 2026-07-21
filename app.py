@@ -72,24 +72,22 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Ensure session state tracks the module string directly or syncs cleanly
-  if "selected_module_name" not in st.session_state:
-    st.session_state.selected_module_name = modules_list[0]
-
+  # Clean Selectbox Bound directly to index
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
-      key="selected_module_name",
+      index=st.session_state.module_index,
+      key="module_selectbox_key",
   )
 
-  # Sync back to module_index so the next/previous buttons keep working
+  # Update module index based on user selection
   st.session_state.module_index = modules_list.index(selected_module)
   st.divider()
 
-  current_module = st.session_state.selected_module_name
+  idx = st.session_state.module_index
 
   # --- MODULE 1 ---
-  if "Module 1" in current_module:
+  if idx == 0:
     st.subheader("Module 1: `print` (The Computer's Voice Box)")
     st.write(
         "In human language, you use your voice to speak. In Python, you use"
@@ -122,7 +120,7 @@ with tab1:
       st.error("❌ Incorrect! Try the correct syntax.")
 
   # --- MODULE 2 ---
-  elif "Module 2" in current_module:
+  elif idx == 1:
     st.subheader("Module 2: Variables (The Computer's Backpack)")
     st.write(
         "Think of a variable as a labeled box where the computer can store data"
@@ -150,7 +148,7 @@ with tab1:
       st.error("❌ Not quite right. Variable name goes on the left!")
 
   # --- MODULE 3 ---
-  elif "Module 3" in current_module:
+  elif idx == 2:
     st.subheader("Module 3: If/Else (The Computer's Choices)")
     st.write(
         "Computers aren't smart on their own; they just follow rules. `if` lets"
@@ -176,7 +174,7 @@ with tab1:
       st.error("❌ Python doesn't use 'when' or 'do' like plain English here.")
 
   # --- MODULE 4 ---
-  elif "Module 4" in current_module:
+  elif idx == 3:
     st.subheader("Module 4: Loops (The Robot's Treadmill)")
     st.write(
         "Instead of writing the same instruction 100 times, a loop tells the"
@@ -201,7 +199,7 @@ with tab1:
       st.error("❌ Not quite! Python relies on `for` loops with ranges.")
 
   # --- MODULE 5 ---
-  elif "Module 5" in current_module:
+  elif idx == 4:
     st.subheader("Module 5: Functions (The Mini-Machine Recipe)")
     st.write(
         "A function is a custom mini-machine you build once and reuse whenever"
@@ -226,7 +224,7 @@ with tab1:
       st.error("❌ Incorrect! Python uses shorthand `def`.")
 
   # --- MODULE 6 ---
-  elif "Module 6" in current_module:
+  elif idx == 5:
     st.subheader("Module 6: Lists & Dictionaries (The Filing Cabinet)")
     st.write(
         "Instead of storing just one value in a backpack, a **List** holds a"
@@ -251,7 +249,7 @@ with tab1:
       st.error("❌ Close, but parentheses `()` are tuples. Lists use `[]`.")
 
   # --- MODULE 7 ---
-  elif "Module 7" in current_module:
+  elif idx == 6:
     st.subheader("Module 7: Imports & Modules (The Toolbelt)")
     st.write(
         "Python comes with thousands of pre-made toolkits. To use a toolkit like"
@@ -276,7 +274,7 @@ with tab1:
       st.error("❌ Incorrect! Python uses the keyword `import`.")
 
   # --- MODULE 8 ---
-  elif "Module 8" in current_module:
+  elif idx == 7:
     st.subheader("Module 8: Try/Except (The Safety Net)")
     st.write(
         "Sometimes code crashes (like dividing by zero). A `try/except` block"
@@ -301,7 +299,7 @@ with tab1:
       st.error("❌ Not quite! Python uses `except` to catch problems.")
 
   # --- MODULE 9 ---
-  elif "Module 9" in current_module:
+  elif idx == 8:
     st.subheader("Module 9: File Handling (The Computer's Diary)")
     st.write(
         "To read or write files on your disk, Python uses the built-in `open()`"
@@ -326,10 +324,10 @@ with tab1:
       st.error("❌ Incorrect! Python's built-in command is `open()`.")
 
   # --- MODULE 10 ---
-  elif "Module 10" in current_module:
+  elif idx == 9:
     st.subheader("Module 10: Object-Oriented Programming (The Blueprint)")
     st.write(
-        "A **class** is a architectural blueprint used to create custom"
+        "A **class** is an architectural blueprint used to create custom"
         " objects. You set up initial properties using `__init__`."
     )
 
@@ -351,7 +349,7 @@ with tab1:
       st.error("❌ Not quite! Python uses the `class` keyword.")
 
   # --- MODULE 11 ---
-  elif "Module 11" in current_module:
+  elif idx == 10:
     st.subheader("Module 11: Lambdas (The Ninja Shortcut)")
     st.write(
         "A **lambda** is a tiny, anonymous one-line function used when you"
@@ -377,7 +375,7 @@ with tab1:
       st.error("❌ Incorrect! Python uses the keyword `lambda`.")
 
   # --- MODULE 12 ---
-  elif "Module 12" in current_module:
+  elif idx == 11:
     st.subheader("Module 12: APIs & JSON (The Internet Wire)")
     st.write(
         "To talk to other servers on the internet, Python sends web requests and"
