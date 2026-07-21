@@ -1,6 +1,8 @@
 import io
+import json
 import random
 import sys
+import urllib.request
 import streamlit as st
 
 # Page Configuration
@@ -42,8 +44,8 @@ if "score" not in st.session_state:
 if "module_index" not in st.session_state:
   st.session_state.module_index = 0
 
-# Track answer states for all 8 modules
-for i in range(1, 9):
+# Track answer states for all 12 modules
+for i in range(1, 13):
   key = f"m{i}_status"
   if key not in st.session_state:
     st.session_state[key] = None
@@ -57,6 +59,10 @@ modules_list = [
     "Module 6: The Filing Cabinet (Lists & Dicts)",
     "Module 7: The Toolbelt (Imports & Modules)",
     "Module 8: The Safety Net (Try/Except)",
+    "Module 9: The Diary (File Handling)",
+    "Module 10: The Blueprint (Classes & OOP)",
+    "Module 11: The Ninja Shortcut (Lambdas)",
+    "Module 12: The Internet Wire (APIs & JSON)",
 ]
 
 # Navigation Tabs
@@ -288,6 +294,111 @@ with tab1:
     elif st.session_state.m8_status == "wrong":
       st.error("❌ Not quite! Python uses `except` to catch problems.")
 
+  # --- MODULE 9 ---
+  elif "Module 9" in current_module:
+    st.subheader("Module 9: File Handling (The Computer's Diary)")
+    st.write(
+        "To read or write files on your disk, Python uses the built-in `open()`"
+        " function combined with a mode like `'r'` (read) or `'w'` (write)."
+    )
+
+    st.markdown("### Challenge 9: How do you open a file to write data into it?")
+    if st.button("open('notes.txt', 'w')", key="m9_b1"):
+      if st.session_state.m9_status != "correct":
+        st.session_state.score += 25
+      st.session_state.m9_status = "correct"
+      st.rerun()
+    if st.button("open_file('notes.txt')", key="m9_b2"):
+      st.session_state.m9_status = "wrong"
+      st.rerun()
+
+    if st.session_state.m9_status == "correct":
+      st.success(
+          "🎉 Perfect! `open(filename, 'w')` opens a file for writing. (+25 XP)"
+      )
+    elif st.session_state.m9_status == "wrong":
+      st.error("❌ Incorrect! Python's built-in command is `open()`.")
+
+  # --- MODULE 10 ---
+  elif "Module 10" in current_module:
+    st.subheader("Module 10: Object-Oriented Programming (The Blueprint)")
+    st.write(
+        "A **class** is a architectural blueprint used to create custom"
+        " objects. You set up initial properties using `__init__`."
+    )
+
+    st.markdown(
+        "### Challenge 10: What keyword creates a new class blueprint?"
+    )
+    if st.button("object Car:", key="m10_b1"):
+      st.session_state.m10_status = "wrong"
+      st.rerun()
+    if st.button("class Car:", key="m10_b2"):
+      if st.session_state.m10_status != "correct":
+        st.session_state.score += 30
+      st.session_state.m10_status = "correct"
+      st.rerun()
+
+    if st.session_state.m10_status == "correct":
+      st.success("🎉 Spot on! `class` defines blueprints in Python. (+30 XP)")
+    elif st.session_state.m10_status == "wrong":
+      st.error("❌ Not quite! Python uses the `class` keyword.")
+
+  # --- MODULE 11 ---
+  elif "Module 11" in current_module:
+    st.subheader("Module 11: Lambdas (The Ninja Shortcut)")
+    st.write(
+        "A **lambda** is a tiny, anonymous one-line function used when you"
+        " don't want to write a full `def` block."
+    )
+
+    st.markdown(
+        "### Challenge 11: Which keyword creates a quick one-line anonymous"
+        " function?"
+    )
+    if st.button("lambda x: x * 2", key="m11_b1"):
+      if st.session_state.m11_status != "correct":
+        st.session_state.score += 30
+      st.session_state.m11_status = "correct"
+      st.rerun()
+    if st.button("shortcut x: x * 2", key="m11_b2"):
+      st.session_state.m11_status = "wrong"
+      st.rerun()
+
+    if st.session_state.m11_status == "correct":
+      st.success("🎉 Incredible! `lambda` is your quick one-liner. (+30 XP)")
+    elif st.session_state.m11_status == "wrong":
+      st.error("❌ Incorrect! Python uses the keyword `lambda`.")
+
+  # --- MODULE 12 ---
+  elif "Module 12" in current_module:
+    st.subheader("Module 12: APIs & JSON (The Internet Wire)")
+    st.write(
+        "To talk to other servers on the internet, Python sends web requests and"
+        " parses data packs called **JSON** (JavaScript Object Notation)."
+    )
+
+    st.markdown(
+        "### Challenge 12: Which standard module helps parse JSON data packets"
+        " into Python dictionaries?"
+    )
+    if st.button("import json", key="m12_b1"):
+      if st.session_state.m12_status != "correct":
+        st.session_state.score += 35
+      st.session_state.m12_status = "correct"
+      st.rerun()
+    if st.button("import internet", key="m12_b2"):
+      st.session_state.m12_status = "wrong"
+      st.rerun()
+
+    if st.session_state.m12_status == "correct":
+      st.success(
+          "🎉 Magnificent! `json` converts web responses into usable data."
+          " (+35 XP)"
+      )
+    elif st.session_state.m12_status == "wrong":
+      st.error("❌ Incorrect! Python uses the `json` module.")
+
   st.divider()
 
   # --- NEXT / PREVIOUS CHAPTER CONTROLS ---
@@ -354,6 +465,10 @@ with tab3:
     * **List `[]`** $\rightarrow$ **The Filing Cabinet:** Ordered rows of items.
     * **`import`** $\rightarrow$ **The Toolbelt:** Bringing in pre-made external toolkits.
     * **`try / except`** $\rightarrow$ **The Safety Net:** Catching errors gracefully.
+    * **`open()`** $\rightarrow$ **The Diary:** Reading and writing hard-drive files.
+    * **`class`** $\rightarrow$ **The Blueprint:** Object-oriented design patterns.
+    * **`lambda`** $\rightarrow$ **The Ninja Shortcut:** One-line anonymous functions.
+    * **`json`** $\rightarrow$ **The Internet Wire:** Parsing web application data packets.
     """
   )
 
