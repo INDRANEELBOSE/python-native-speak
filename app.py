@@ -1,4 +1,5 @@
 import io
+import random
 import sys
 import streamlit as st
 
@@ -41,18 +42,21 @@ if "score" not in st.session_state:
 if "module_index" not in st.session_state:
   st.session_state.module_index = 0
 
-# Track answer states per module
-if "m1_status" not in st.session_state:
-  st.session_state.m1_status = None
-if "m2_status" not in st.session_state:
-  st.session_state.m2_status = None
-if "m3_status" not in st.session_state:
-  st.session_state.m3_status = None
+# Track answer states for all 8 modules
+for i in range(1, 9):
+  key = f"m{i}_status"
+  if key not in st.session_state:
+    st.session_state[key] = None
 
 modules_list = [
     "Module 1: The Voice Box (print)",
     "Module 2: The Backpack (Variables)",
     "Module 3: The Fork in the Road (If/Else)",
+    "Module 4: The Endless Loop (While/For)",
+    "Module 5: The Mini-Machine (Functions)",
+    "Module 6: The Filing Cabinet (Lists & Dicts)",
+    "Module 7: The Toolbelt (Imports & Modules)",
+    "Module 8: The Safety Net (Try/Except)",
 ]
 
 # Navigation Tabs
@@ -62,20 +66,17 @@ tab1, tab2, tab3 = st.tabs(
 
 # --- TAB 1: INTERACTIVE LESSONS ---
 with tab1:
-  # Clean selectbox driven directly by session_state.module_index
   selected_module = st.selectbox(
       "Choose Your Learning Module",
       modules_list,
       index=st.session_state.module_index,
   )
-
-  # Sync manual dropdown changes back to index
   st.session_state.module_index = modules_list.index(selected_module)
-
   st.divider()
 
   current_module = modules_list[st.session_state.module_index]
 
+  # --- MODULE 1 ---
   if "Module 1" in current_module:
     st.subheader("Module 1: `print` (The Computer's Voice Box)")
     st.write(
@@ -87,29 +88,28 @@ with tab1:
     col1, col2, col3 = st.columns(3)
 
     with col1:
-      if st.button("speak('Hello!')"):
-        st.session_state.m1_status = "wrong1"
+      if st.button("speak('Hello!')", key="m1_b1"):
+        st.session_state.m1_status = "wrong"
         st.rerun()
-
     with col2:
-      if st.button("print('Hello!')"):
+      if st.button("print('Hello!')", key="m1_b2"):
         if st.session_state.m1_status != "correct":
           st.session_state.score += 10
         st.session_state.m1_status = "correct"
         st.rerun()
-
     with col3:
-      if st.button("display('Hello!')"):
-        st.session_state.m1_status = "wrong3"
+      if st.button("display('Hello!')", key="m1_b3"):
+        st.session_state.m1_status = "wrong"
         st.rerun()
 
     if st.session_state.m1_status == "correct":
       st.success(
           "🎉 Correct! You spoke your first line of Python! (+10 XP)"
       )
-    elif st.session_state.m1_status in ["wrong1", "wrong3"]:
+    elif st.session_state.m1_status == "wrong":
       st.error("❌ Incorrect! Try the correct syntax.")
 
+  # --- MODULE 2 ---
   elif "Module 2" in current_module:
     st.subheader("Module 2: Variables (The Computer's Backpack)")
     st.write(
@@ -118,13 +118,13 @@ with tab1:
     )
 
     st.markdown("### Challenge 2: Store a value!")
-    if st.button("100 = score"):
-      st.session_state.m2_status = "wrong1"
+    if st.button("100 = score", key="m2_b1"):
+      st.session_state.m2_status = "wrong"
       st.rerun()
-    if st.button("score == 100"):
-      st.session_state.m2_status = "wrong2"
+    if st.button("score == 100", key="m2_b2"):
+      st.session_state.m2_status = "wrong"
       st.rerun()
-    if st.button("score = 100"):
+    if st.button("score = 100", key="m2_b3"):
       if st.session_state.m2_status != "correct":
         st.session_state.score += 10
       st.session_state.m2_status = "correct"
@@ -134,9 +134,10 @@ with tab1:
       st.success(
           "🎉 Nailed it! Data successfully saved into memory. (+10 XP)"
       )
-    elif st.session_state.m2_status:
+    elif st.session_state.m2_status == "wrong":
       st.error("❌ Not quite right. Variable name goes on the left!")
 
+  # --- MODULE 3 ---
   elif "Module 3" in current_module:
     st.subheader("Module 3: If/Else (The Computer's Choices)")
     st.write(
@@ -145,12 +146,12 @@ with tab1:
     )
 
     st.markdown("### Challenge 3: Write a basic choice condition")
-    if st.button("if score > 50: win()"):
+    if st.button("if score > 50: win()", key="m3_b1"):
       if st.session_state.m3_status != "correct":
         st.session_state.score += 15
       st.session_state.m3_status = "correct"
       st.rerun()
-    if st.button("when score > 50 do win()"):
+    if st.button("when score > 50 do win()", key="m3_b2"):
       st.session_state.m3_status = "wrong"
       st.rerun()
 
@@ -161,6 +162,131 @@ with tab1:
       )
     elif st.session_state.m3_status == "wrong":
       st.error("❌ Python doesn't use 'when' or 'do' like plain English here.")
+
+  # --- MODULE 4 ---
+  elif "Module 4" in current_module:
+    st.subheader("Module 4: Loops (The Robot's Treadmill)")
+    st.write(
+        "Instead of writing the same instruction 100 times, a loop tells the"
+        " computer to repeat an action automatically."
+    )
+
+    st.markdown("### Challenge 4: Which command runs a task across a range?")
+    if st.button("repeat 5 times:", key="m4_b1"):
+      st.session_state.m4_status = "wrong"
+      st.rerun()
+    if st.button("for i in range(5):", key="m4_b2"):
+      if st.session_state.m4_status != "correct":
+        st.session_state.score += 15
+      st.session_state.m4_status = "correct"
+      st.rerun()
+
+    if st.session_state.m4_status == "correct":
+      st.success(
+          "🎉 Perfect! `for i in range()` is Python's loop counter. (+15 XP)"
+      )
+    elif st.session_state.m4_status == "wrong":
+      st.error("❌ Not quite! Python relies on `for` loops with ranges.")
+
+  # --- MODULE 5 ---
+  elif "Module 5" in current_module:
+    st.subheader("Module 5: Functions (The Mini-Machine Recipe)")
+    st.write(
+        "A function is a custom mini-machine you build once and reuse whenever"
+        " you want. You define it using `def`."
+    )
+
+    st.markdown("### Challenge 5: How do you start building a custom function?")
+    if st.button("create my_func():", key="m5_b1"):
+      st.session_state.m5_status = "wrong"
+      st.rerun()
+    if st.button("def make_coffee():", key="m5_b2"):
+      if st.session_state.m5_status != "correct":
+        st.session_state.score += 20
+      st.session_state.m5_status = "correct"
+      st.rerun()
+
+    if st.session_state.m5_status == "correct":
+      st.success(
+          "🎉 Outstanding! `def` defines a function in Python. (+20 XP)"
+      )
+    elif st.session_state.m5_status == "wrong":
+      st.error("❌ Incorrect! Python uses shorthand `def`.")
+
+  # --- MODULE 6 ---
+  elif "Module 6" in current_module:
+    st.subheader("Module 6: Lists & Dictionaries (The Filing Cabinet)")
+    st.write(
+        "Instead of storing just one value in a backpack, a **List** holds a"
+        " whole row of items inside brackets `[]`."
+    )
+
+    st.markdown("### Challenge 6: How do you write a list of fruits?")
+    if st.button("fruits = (apple, banana)", key="m6_b1"):
+      st.session_state.m6_status = "wrong"
+      st.rerun()
+    if st.button("fruits = ['apple', 'banana']", key="m6_b2"):
+      if st.session_state.m6_status != "correct":
+        st.session_state.score += 20
+      st.session_state.m6_status = "correct"
+      st.rerun()
+
+    if st.session_state.m6_status == "correct":
+      st.success(
+          "🎉 Spot on! Lists use square brackets `[]` in Python. (+20 XP)"
+      )
+    elif st.session_state.m6_status == "wrong":
+      st.error("❌ Close, but parentheses `()` are tuples. Lists use `[]`.")
+
+  # --- MODULE 7 ---
+  elif "Module 7" in current_module:
+    st.subheader("Module 7: Imports & Modules (The Toolbelt)")
+    st.write(
+        "Python comes with thousands of pre-made toolkits. To use a toolkit like"
+        " random math tools, you have to `import` it first."
+    )
+
+    st.markdown("### Challenge 7: How do you bring in the random toolkit?")
+    if st.button("get random", key="m7_b1"):
+      st.session_state.m7_status = "wrong"
+      st.rerun()
+    if st.button("import random", key="m7_b2"):
+      if st.session_state.m7_status != "correct":
+        st.session_state.score += 20
+      st.session_state.m7_status = "correct"
+      st.rerun()
+
+    if st.session_state.m7_status == "correct":
+      st.success(
+          "🎉 You got it! `import` unlocks external modules. (+20 XP)"
+      )
+    elif st.session_state.m7_status == "wrong":
+      st.error("❌ Incorrect! Python uses the keyword `import`.")
+
+  # --- MODULE 8 ---
+  elif "Module 8" in current_module:
+    st.subheader("Module 8: Try/Except (The Safety Net)")
+    st.write(
+        "Sometimes code crashes (like dividing by zero). A `try/except` block"
+        " catches errors gracefully instead of letting the app explode."
+    )
+
+    st.markdown(
+        "### Challenge 8: What keyword catches errors when a crash happens?"
+    )
+    if st.button("catch error:", key="m8_b1"):
+      st.session_state.m8_status = "wrong"
+      st.rerun()
+    if st.button("except:", key="m8_b2"):
+      if st.session_state.m8_status != "correct":
+        st.session_state.score += 25
+      st.session_state.m8_status = "correct"
+      st.rerun()
+
+    if st.session_state.m8_status == "correct":
+      st.success("🎉 Awesome! `except` handles the crash safely. (+25 XP)")
+    elif st.session_state.m8_status == "wrong":
+      st.error("❌ Not quite! Python uses `except` to catch problems.")
 
   st.divider()
 
@@ -220,11 +346,14 @@ with tab3:
 
   st.markdown(
       """
-    * **`print()`** $\rightarrow$ **The Voice Box:** Screams text onto the screen for humans to read.
-    * **Variable** $\rightarrow$ **The Backpack:** A labeled pocket where you store a piece of information (like a name or number) to use later.
-    * **String** $\rightarrow$ **The Text Tag:** Normal everyday text wrapped in quotes (like `"Apple"`).
-    * **Integer** $\rightarrow$ **The Whole Number:** Plain counting numbers without decimals (like `42`).
-    * **`if / else`** $\rightarrow$ **The Fork in the Road:** Tells the computer what to do depending on whether a rule is true or false.
+    * **`print()`** $\rightarrow$ **The Voice Box:** Screams text onto the screen.
+    * **Variable** $\rightarrow$ **The Backpack:** A labeled pocket storing data.
+    * **`if / else`** $\rightarrow$ **The Fork in the Road:** Decision maker.
+    * **`for / while`** $\rightarrow$ **The Treadmill:** Automatic loop repetition.
+    * **`def`** $\rightarrow$ **The Mini-Machine:** Reusable custom functions.
+    * **List `[]`** $\rightarrow$ **The Filing Cabinet:** Ordered rows of items.
+    * **`import`** $\rightarrow$ **The Toolbelt:** Bringing in pre-made external toolkits.
+    * **`try / except`** $\rightarrow$ **The Safety Net:** Catching errors gracefully.
     """
   )
 
